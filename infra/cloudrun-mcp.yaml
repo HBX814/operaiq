@@ -1,0 +1,25 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: operaiq-mcp-server
+  labels:
+    cloud.googleapis.com/location: us-central1
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      serviceAccountName: operaiq-mcp-server@operaiq.iam.gserviceaccount.com
+      containers:
+      - image: gcr.io/operaiq/operaiq-mcp-server
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GCP_PROJECT_ID
+          value: "operaiq"
+        - name: BQ_DATASET
+          value: "operaiq"
+        - name: PUBSUB_ROLLBACK_TOPIC
+          value: "operaiq-events"

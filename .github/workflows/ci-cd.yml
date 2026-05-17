@@ -1,0 +1,146 @@
+name: OperaIQ CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  GCP_PROJECT_ID: operaiq
+  GCP_REGION: us-central1
+  MCP_SERVICE: operaiq-mcp-server
+  AGENT_SERVICE: operaiq-agents
+  FRONTEND_SERVICE: operaiq-frontend
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Frontend — Type-check + Build
+  # ─────────────────────────────────────────────────────────────────────────
+  frontend-check:
+    name: Frontend TypeScript + Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run build
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # MCP Server — Python Tests
+  # ─────────────────────────────────────────────────────────────────────────
+  mcp-server-tests:
+    name: MCP Server Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt pytest httpx
+      - name: Run unit tests (offline)
+        run: python -m pytest tests/ -v --tb=short -k "not integration"
+        env:
+          TEST_TOKEN: test-token
+          TEST_OPERATOR_TOKEN: test-operator-token
+          GCP_PROJECT_ID: operaiq
+          ENV: test
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Agent Service — Python Tests
+  # ─────────────────────────────────────────────────────────────────────────
+  agent-service-tests:
+    name: Agent Service Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agents
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt pytest httpx
+      - name: Run unit tests
+        run: python -m pytest tests/ -v --tb=short
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Deploy to Cloud Run (main branch only)
+  # ─────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    needs: [frontend-check, mcp-server-tests, agent-service-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push MCP Server
+        run: |
+          docker build -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/operaiq/${{ env.MCP_SERVICE }}:${{ github.sha }} ./mcp-server
+          docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/operaiq/${{ env.MCP_SERVICE }}:${{ github.sha }}
+
+      - name: Deploy MCP Server to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.MCP_SERVICE }} \
+            --image=${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/operaiq/${{ env.MCP_SERVICE }}:${{ github.sha }} \
+            --region=${{ env.GCP_REGION }} \
+            --platform=managed \
+            --no-allow-unauthenticated \
+            --service-account=operaiq-mcp-server@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --set-env-vars="GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}" \
+            --set-secrets="TEST_TOKEN=operaiq-test-token:latest,TEST_OPERATOR_TOKEN=operaiq-operator-token:latest,GEMINI_API_KEY=operaiq-gemini-key:latest" \
+            --min-instances=1 \
+            --max-instances=10 \
+            --memory=1Gi \
+            --cpu=1
+
+      - name: Build and push Agent Service
+        run: |
+          docker build -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/operaiq/${{ env.AGENT_SERVICE }}:${{ github.sha }} ./agents
+          docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/operaiq/${{ env.AGENT_SERVICE }}:${{ github.sha }}
+
+      - name: Deploy Agent Service to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.AGENT_SERVICE }} \
+            --image=${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/operaiq/${{ env.AGENT_SERVICE }}:${{ github.sha }} \
+            --region=${{ env.GCP_REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --service-account=operaiq-agents@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
+            --set-env-vars="GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}" \
+            --set-secrets="GEMINI_API_KEY=operaiq-gemini-key:latest,MCP_API_TOKEN=operaiq-operator-token:latest" \
+            --min-instances=1 \
+            --max-instances=5 \
+            --memory=2Gi \
+            --cpu=2

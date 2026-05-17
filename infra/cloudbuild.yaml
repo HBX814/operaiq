@@ -1,0 +1,75 @@
+steps:
+  # 1. Install dependencies for the frontend
+  - name: 'node:20'
+    entrypoint: 'npm'
+    args: ['install']
+    dir: 'frontend'
+
+  # 2. Build the Next.js frontend
+  - name: 'node:20'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+    dir: 'frontend'
+
+  # 3. Install Python dependencies and run tests for MCP Server
+  - name: 'python:3.12'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r requirements.txt
+        pytest tests/
+    dir: 'mcp-server'
+
+  # 4. Install Python dependencies and run tests for Agents service
+  - name: 'python:3.12'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r requirements.txt pytest httpx
+        pytest tests/
+    dir: 'agents'
+
+  # 5. Build and deploy Frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'operaiq-frontend'
+      - '--source=frontend'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=NEXT_PUBLIC_API_TOKEN=${_API_TOKEN}'
+
+  # 6. Build and deploy MCP Server to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'operaiq-mcp'
+      - '--source=mcp-server'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=GCP_PROJECT_ID=${PROJECT_ID}'
+
+  # 7. Build and deploy Agents to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'operaiq-agents'
+      - '--source=agents'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=MCP_SERVER_URL=https://operaiq-mcp-xxxxx.a.run.app/mcp,GEMINI_API_KEY=${_GEMINI_API_KEY}'
+
+substitutions:
+  _API_TOKEN: 'default-token'
+  _GEMINI_API_KEY: 'default-key'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

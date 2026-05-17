@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OperaIQ - Incident Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#301400",
+                      "secondary": "#c6c6cd",
+                      "inverse-on-surface": "#303038",
+                      "error": "#ffb4ab",
+                      "primary-fixed": "#e1e0ff",
+                      "on-tertiary-container": "#452000",
+                      "surface-container": "#1f1f27",
+                      "outline": "#908fa0",
+                      "surface-variant": "#34343d",
+                      "surface-container-lowest": "#0d0d15",
+                      "on-primary-container": "#0d0096",
+                      "background": "#13131b",
+                      "primary-container": "#8083ff",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#34343d",
+                      "on-secondary-fixed-variant": "#45474d",
+                      "tertiary-fixed": "#ffdcc5",
+                      "on-background": "#e4e1ed",
+                      "on-error": "#690005",
+                      "tertiary-fixed-dim": "#ffb783",
+                      "primary": "#c0c1ff",
+                      "secondary-fixed-dim": "#c6c6cd",
+                      "inverse-surface": "#e4e1ed",
+                      "inverse-primary": "#494bd6",
+                      "surface": "#13131b",
+                      "secondary-fixed": "#e2e2e9",
+                      "secondary-container": "#45474d",
+                      "outline-variant": "#464554",
+                      "on-secondary-fixed": "#1a1b21",
+                      "surface-container-high": "#292932",
+                      "on-primary": "#1000a9",
+                      "on-secondary-container": "#b4b5bc",
+                      "on-surface": "#e4e1ed",
+                      "surface-tint": "#c0c1ff",
+                      "surface-bright": "#393841",
+                      "primary-fixed-dim": "#c0c1ff",
+                      "tertiary": "#ffb783",
+                      "surface-container-low": "#1b1b23",
+                      "on-secondary": "#2e3036",
+                      "tertiary-container": "#d97721",
+                      "on-tertiary": "#4f2500",
+                      "on-surface-variant": "#c7c4d7",
+                      "on-error-container": "#ffdad6",
+                      "surface-dim": "#13131b",
+                      "on-tertiary-fixed-variant": "#703700",
+                      "on-primary-fixed-variant": "#2f2ebe",
+                      "on-primary-fixed": "#07006c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "container-padding": "20px",
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "margin-page": "40px",
+                      "stack-sm": "8px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "monospace"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-base": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono-data": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-base": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .grid-bg {
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-[#0A0B0E] text-on-surface font-body-base antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-[#0D0F14] text-indigo-500 font-['Inter'] text-sm font-medium border-r border-white/5 flex-col py-4 h-full w-64 z-50 flex-shrink-0">
+<div class="px-6 mb-8">
+<div class="text-indigo-500 font-bold text-xl tracking-tight">OperaIQ</div>
+<div class="text-xs text-slate-500 mt-1">Command Center</div>
+</div>
+<div class="flex-1 flex flex-col gap-2 px-4">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg border-l-4 border-indigo-500 bg-indigo-500/10 text-indigo-400" href="#">
+<span class="material-symbols-outlined text-xl">error</span>
+<span>Incidents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl">layers</span>
+<span>Services</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+<span>Agents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl">assessment</span>
+<span>Reports</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-2 px-4 border-t border-white/5 pt-4">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl">contact_support</span>
+<span>Support</span>
+</a>
+<div class="mt-4 flex items-center gap-3 px-4">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center overflow-hidden">
+<img alt="System Administrator" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl6qlRD-JK9_Wmp4iOTcA6lUH69vhX7x9UjRirc_sB3cuw5KdKepZLTLU4CmpMtxpQyti87_pafOxA7ik7bG6bOsUABOD490_kYdj1OgaZ91sBEOs-GiLQPVfYV8u8EIp1YjX5qTLqVEHP2I1MvNBOQNoZi6Ooqvxu8513NDvG9p4IWp-IMPiWC89lpW5yd2Om_bpSVqtP-lr5nsK-KGg3FV8Z2MuxNWwI1czCZoLx1Hod4-4Gmou8k-plI-tjq1FVPaz2fp5DMVs"/>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">System Admin</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col relative w-full overflow-hidden">
+<!-- TopNavBar -->
+<header class="bg-[#0D0F14]/80 backdrop-blur-xl text-indigo-500 font-['Inter'] tracking-tight border-b border-white/5 shadow-2xl shadow-indigo-500/10 flex justify-between items-center w-full px-6 h-16 z-40 flex-shrink-0 transition-all duration-300 ease-in-out sticky top-0 md:hidden">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-slate-400 hover:text-indigo-300 transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-xl font-black text-indigo-500 tracking-tighter">OperaIQ</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:bg-white/5 hover:text-indigo-300 p-2 rounded-full transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-slate-400 hover:bg-white/5 hover:text-indigo-300 p-2 rounded-full transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-slate-400 hover:bg-white/5 hover:text-indigo-300 p-2 rounded-full transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border border-white/10 ml-2">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW4IHzPgG1_i_ZNzlUie9A2BxScnZnW6Fo79KSd5fu2CgKLqrr46QBSKA_PSQbvU5zN48ZO2rxrinkvKvxdYOCSjkDmJ4vbPrpQFCrhO1gyhPVd0YDvFxmjhUosvYnGau3hNRnl0KC5pB2ZBBxmGYYvjjDjYZ74TlvRWck8j60KmIvnTsuOpe716tb6ngU9k0_DUM7ocPWPZoc1onAUyzbgEzockbpgpfl3ZbxapfKjh-nZqPYKOtGpivpugK1g8o-zJHXK3SXYa8"/>
+</div>
+</div>
+</header>
+<!-- Search Header -->
+<div class="bg-[#0D0F14] border-b border-white/5 p-6 flex-shrink-0 z-30">
+<div class="max-w-6xl mx-auto flex items-center gap-4">
+<!-- Hero Search Bar -->
+<div class="flex-1 relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-[#1A1C23] border border-white/10 text-on-surface rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all font-body-base text-body-base placeholder-slate-500 shadow-inner" placeholder="Search incidents... e.g. payment service errors last week" type="text"/>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="max-w-6xl mx-auto mt-4 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A1C23] border border-white/5 text-slate-300 hover:text-white hover:bg-[#2A2C35] transition-colors whitespace-nowrap text-sm font-medium">
+                    Service <span class="material-symbols-outlined text-sm">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 whitespace-nowrap text-sm font-medium">
+                    Severity: CRITICAL <span class="material-symbols-outlined text-sm">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A1C23] border border-white/5 text-slate-300 hover:text-white hover:bg-[#2A2C35] transition-colors whitespace-nowrap text-sm font-medium">
+                    Date Range <span class="material-symbols-outlined text-sm">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A1C23] border border-white/5 text-slate-300 hover:text-white hover:bg-[#2A2C35] transition-colors whitespace-nowrap text-sm font-medium">
+                    Status <span class="material-symbols-outlined text-sm">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A1C23] border border-white/5 text-slate-300 hover:text-white hover:bg-[#2A2C35] transition-colors whitespace-nowrap text-sm font-medium">
+                    Assigned Agent <span class="material-symbols-outlined text-sm">arrow_drop_down</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Content Canvas -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-8 relative grid-bg">
+<div class="max-w-6xl mx-auto">
+<!-- Results Count & Actions -->
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-slate-400 font-medium text-sm">Showing 47 incidents</h2>
+<div class="flex gap-2">
+<button class="p-1.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-xl">view_list</span>
+</button>
+<button class="p-1.5 rounded text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 transition-colors">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+</button>
+</div>
+</div>
+<!-- Incident Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+<!-- Expanded Card (CRITICAL) -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 col-span-1 xl:col-span-2 shadow-lg shadow-black/50">
+<!-- Glow effect -->
+<div class="absolute -top-20 -left-20 w-40 h-40 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex justify-between items-start z-10">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30">CRITICAL</span>
+<span class="text-slate-400 text-xs px-2 py-0.5 rounded bg-surface-container border border-white/5">PAYMENT_API</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-white mt-1">Payment Gateway Timeout</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                                    In Progress
+                                </span>
+</div>
+</div>
+<div class="flex items-center gap-6 text-sm text-slate-400 z-10 border-b border-white/5 pb-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Started: 10:42 AM (2h 14m ago)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">person</span>
+<span>Agent: J. Doe</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">tag</span>
+<span>INC-8942</span>
+</div>
+</div>
+<!-- Timeline (Expanded) -->
+<div class="z-10 pt-2 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-slate-300">Incident Timeline</span>
+<button class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                                    Hide Timeline <span class="material-symbols-outlined text-sm">expand_less</span>
+</button>
+</div>
+<!-- Timeline Bar -->
+<div class="relative h-2 bg-surface-container rounded-full w-full mt-4 mb-8">
+<!-- Progress Fill -->
+<div class="absolute top-0 left-0 h-full bg-indigo-500/30 rounded-full w-[80%]"></div>
+<!-- Markers -->
+<!-- Deploy -->
+<div class="absolute top-1/2 -translate-y-1/2 left-[10%] flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-blue-500 border-2 border-[#1A1C23] z-10"></div>
+<span class="absolute top-4 text-[10px] text-blue-400 font-mono-data whitespace-nowrap">Deploy v2.4</span>
+</div>
+<!-- Alert -->
+<div class="absolute top-1/2 -translate-y-1/2 left-[30%] flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-amber-500 border-2 border-[#1A1C23] z-10"></div>
+<span class="absolute top-4 text-[10px] text-amber-400 font-mono-data whitespace-nowrap">Alert Triggered</span>
+</div>
+<!-- Agent Engaged -->
+<div class="absolute top-1/2 -translate-y-1/2 left-[45%] flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-indigo-500 border-2 border-[#1A1C23] z-10"></div>
+<span class="absolute top-4 text-[10px] text-indigo-400 font-mono-data whitespace-nowrap">Agent Assigned</span>
+</div>
+<!-- Rollback -->
+<div class="absolute top-1/2 -translate-y-1/2 left-[80%] flex flex-col items-center">
+<div class="w-4 h-4 rounded-full bg-[#1A1C23] border-2 border-orange-500 flex items-center justify-center z-10">
+<div class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
+</div>
+<span class="absolute top-5 text-[10px] text-orange-400 font-mono-data whitespace-nowrap font-bold">Rollback Initiated</span>
+</div>
+<!-- Resolved (Pending) -->
+<div class="absolute top-1/2 -translate-y-1/2 right-0 flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-surface-variant border-2 border-[#1A1C23] z-10"></div>
+<span class="absolute top-4 text-[10px] text-slate-500 font-mono-data whitespace-nowrap">Resolution</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Standard Card (WARNING) -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="absolute -top-20 -left-20 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex justify-between items-start z-10">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">WARNING</span>
+<span class="text-slate-400 text-xs px-2 py-0.5 rounded bg-surface-container border border-white/5">AUTH_SERVICE</span>
+</div>
+<h3 class="font-body-base text-lg font-semibold text-white mt-1">High Latency on Login Endpoint</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-container border border-white/10 text-slate-300 text-xs font-medium">
+                                    Triaged
+                                </span>
+</div>
+</div>
+<div class="flex items-center justify-between text-sm text-slate-400 z-10 mt-2">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Started: 11:15 AM (45m ago)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">tag</span>
+<span>INC-8943</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 hover:text-white transition-colors text-sm flex items-center gap-1">
+                                View Timeline
+                            </button>
+</div>
+</div>
+<!-- Standard Card (INFO) -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+<div class="absolute -top-20 -left-20 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex justify-between items-start z-10">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">INFO</span>
+<span class="text-slate-400 text-xs px-2 py-0.5 rounded bg-surface-container border border-white/5">DATA_SYNC</span>
+</div>
+<h3 class="font-body-base text-lg font-semibold text-white mt-1">Scheduled Maintenance Delayed</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium">
+                                    Resolved
+                                </span>
+</div>
+</div>
+<div class="flex items-center justify-between text-sm text-slate-400 z-10 mt-2">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Duration: 12m</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">tag</span>
+<span>INC-8941</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 hover:text-white transition-colors text-sm flex items-center gap-1">
+                                View Timeline
+                            </button>
+</div>
+</div>
+<!-- Standard Card (CRITICAL - Resolved) -->
+<div class="glass-panel rounded-xl p-5 flex flex-col gap-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 opacity-75">
+<div class="flex justify-between items-start z-10">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30">CRITICAL</span>
+<span class="text-slate-400 text-xs px-2 py-0.5 rounded bg-surface-container border border-white/5">USER_DB</span>
+</div>
+<h3 class="font-body-base text-lg font-semibold text-white mt-1">Database Connection Pool Exhausted</h3>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-medium">
+                                    Resolved
+                                </span>
+</div>
+</div>
+<div class="flex items-center justify-between text-sm text-slate-400 z-10 mt-2">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Resolved: Yesterday, 4:20 PM</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">person</span>
+<span>Agent: M. Smith</span>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 hover:text-white transition-colors text-sm flex items-center gap-1">
+                                View Timeline
+                            </button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-8 flex justify-center items-center gap-2 pb-12">
+<button class="w-8 h-8 rounded flex items-center justify-center text-slate-500 hover:bg-white/5 hover:text-white transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded flex items-center justify-center bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono-data text-sm">
+                        1
+                    </button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white transition-colors font-mono-data text-sm">
+                        2
+                    </button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white transition-colors font-mono-data text-sm">
+                        3
+                    </button>
+<span class="text-slate-500 font-mono-data text-sm px-1">...</span>
+<button class="w-8 h-8 rounded flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white transition-colors font-mono-data text-sm">
+                        8
+                    </button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,20 @@
+{
+  "type": "record",
+  "name": "Event",
+  "fields": [
+    {"name": "event_type", "type": "string"},
+    {"name": "timestamp", "type": "string"},
+    {"name": "service", "type": "string"},
+    {"name": "deployment_id", "type": ["null", "string"], "default": null},
+    {"name": "version", "type": ["null", "string"], "default": null},
+    {"name": "status", "type": ["null", "string"], "default": null},
+    {"name": "region", "type": ["null", "string"], "default": null},
+    {"name": "metric_type", "type": ["null", "string"], "default": null},
+    {"name": "value", "type": ["null", "double"], "default": null},
+    {"name": "incident_id", "type": ["null", "string"], "default": null},
+    {"name": "title", "type": ["null", "string"], "default": null},
+    {"name": "severity", "type": ["null", "string"], "default": null},
+    {"name": "triggered_by_deployment_id", "type": ["null", "string"], "default": null},
+    {"name": "ingested_at", "type": "string"}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "create_postmortem_draft",
+    "arguments": {"incident_id": "INC-SMOKE-001"}
+  }
+}

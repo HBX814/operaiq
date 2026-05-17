@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* OperaIQ Design System — Dark Obsidian Theme */
+:root {
+  --background: 240 10% 4%;
+  --foreground: 0 0% 95%;
+  --card: 240 8% 7%;
+  --card-foreground: 0 0% 95%;
+  --primary: 239 84% 67%;       /* Indigo #6366f1 */
+  --primary-foreground: 0 0% 100%;
+  --muted: 240 6% 12%;
+  --muted-foreground: 240 5% 50%;
+  --border: 240 6% 14%;
+  --input: 240 8% 10%;
+  --ring: 239 84% 67%;
+  --critical: 0 72% 51%;         /* Red */
+  --warning: 38 92% 50%;         /* Amber */
+  --success: 142 71% 45%;        /* Green */
+  --info: 217 91% 60%;           /* Blue */
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-hover {
+  transition: all 0.2s ease;
+}
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.1);
+}
+
+/* Severity badge colors */
+.severity-critical {
+  color: hsl(var(--critical));
+  background: hsla(0, 72%, 51%, 0.12);
+  border-color: hsla(0, 72%, 51%, 0.25);
+}
+.severity-warning {
+  color: hsl(var(--warning));
+  background: hsla(38, 92%, 50%, 0.12);
+  border-color: hsla(38, 92%, 50%, 0.25);
+}
+.severity-info {
+  color: hsl(var(--info));
+  background: hsla(217, 91%, 60%, 0.12);
+  border-color: hsla(217, 91%, 60%, 0.25);
+}
+.severity-success {
+  color: hsl(var(--success));
+  background: hsla(142, 71%, 45%, 0.12);
+  border-color: hsla(142, 71%, 45%, 0.25);
+}
+
+/* Status pulse animations */
+@keyframes pulse-critical {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pulse-critical {
+  animation: pulse-critical 1.5s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(240 6% 25%);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+/* Chat message animations */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.message-enter {
+  animation: slideInFromBottom 0.2s ease-out;
+}
+
+/* Recharts custom tooltips */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* Thinking dots animation */
+@keyframes thinking {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
+}
+.thinking-dots span {
+  display: inline-block;
+  animation: thinking 1.4s ease-in-out infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }

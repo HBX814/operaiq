@@ -1,0 +1,9 @@
+[
+  {"name": "caller_id", "type": "STRING", "mode": "REQUIRED", "description": "Authenticated user ID from OAuth token"},
+  {"name": "tool_name", "type": "STRING", "mode": "REQUIRED", "description": "MCP tool that was invoked"},
+  {"name": "input_params", "type": "STRING", "mode": "NULLABLE", "description": "JSON string of tool input parameters"},
+  {"name": "result_status", "type": "STRING", "mode": "REQUIRED", "description": "success or error"},
+  {"name": "latency_ms", "type": "INT64", "mode": "REQUIRED", "description": "Tool execution time in milliseconds"},
+  {"name": "timestamp", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "When the tool was called"},
+  {"name": "error_message", "type": "STRING", "mode": "NULLABLE", "description": "Error details if result_status is error"}
+]

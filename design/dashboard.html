@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OperaIQ - Live Operations Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed-dim": "#c0c1ff",
+                      "on-primary": "#1000a9",
+                      "on-tertiary-fixed-variant": "#703700",
+                      "tertiary": "#ffb783",
+                      "on-error": "#690005",
+                      "on-error-container": "#ffdad6",
+                      "on-surface": "#e4e1ed",
+                      "secondary-fixed-dim": "#c6c6cd",
+                      "surface-dim": "#13131b",
+                      "surface-tint": "#c0c1ff",
+                      "on-surface-variant": "#c7c4d7",
+                      "surface-container-low": "#1b1b23",
+                      "on-background": "#e4e1ed",
+                      "outline": "#908fa0",
+                      "secondary": "#c6c6cd",
+                      "inverse-surface": "#e4e1ed",
+                      "inverse-primary": "#494bd6",
+                      "on-tertiary": "#4f2500",
+                      "surface-container": "#1f1f27",
+                      "on-secondary-fixed": "#1a1b21",
+                      "surface-container-high": "#292932",
+                      "on-primary-container": "#0d0096",
+                      "on-primary-fixed": "#07006c",
+                      "tertiary-container": "#d97721",
+                      "on-tertiary-container": "#452000",
+                      "surface": "#13131b",
+                      "surface-bright": "#393841",
+                      "primary": "#c0c1ff",
+                      "inverse-on-surface": "#303038",
+                      "on-primary-fixed-variant": "#2f2ebe",
+                      "on-secondary-fixed-variant": "#45474d",
+                      "surface-container-lowest": "#0d0d15",
+                      "tertiary-fixed-dim": "#ffb783",
+                      "primary-fixed": "#e1e0ff",
+                      "on-secondary": "#2e3036",
+                      "primary-container": "#8083ff",
+                      "surface-container-highest": "#34343d",
+                      "secondary-fixed": "#e2e2e9",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#ffdcc5",
+                      "on-secondary-container": "#b4b5bc",
+                      "secondary-container": "#45474d",
+                      "background": "#13131b",
+                      "surface-variant": "#34343d",
+                      "outline-variant": "#464554",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed": "#301400"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-lg": "32px",
+                      "stack-md": "16px",
+                      "unit": "4px",
+                      "container-padding": "20px",
+                      "gutter": "24px",
+                      "margin-page": "40px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "body-base": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "mono-data": [
+                              "monospace"
+                      ]
+              },
+              "fontSize": {
+                      "body-base": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "mono-data": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+            },
+          }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .pulse-dot {
+            position: relative;
+        }
+        .pulse-dot::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: inherit;
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#0A0B0E] text-on-background font-body-base text-body-base h-screen overflow-hidden flex flex-col antialiased">
+<!-- TopNavBar -->
+<nav class="bg-[#0A0B0E]/80 backdrop-blur-xl docked full-width top-0 h-[60px] z-50 border-b border-white/10 shadow-2xl shadow-indigo-500/10 flex justify-between items-center w-full px-6 flex-shrink-0">
+<div class="text-xl font-black text-white flex items-center gap-2 font-['Inter'] antialiased tracking-tight">
+            OperaIQ
+        </div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200 p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200 p-2 rounded-full active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden border border-outline-variant">
+<img alt="User avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCANfvYV3CWELfG7atg061yIg57nTW85AR5T91j3pmH6-t41x8yYHUzSKjhizrceJ7Nfk1ncj0i5A4HOujHYNRCtr7Ym8XDFwtZq2sFqn_FaKExm8lP7teD7XbNgHIh__lOx-mPFTz29nWVcZCCzCMZ58ikp68q6KRSQd-4Ury0YGaWf_pnl53oBtvthBnU5zy3DNkswGln6wgGZ2jIPG3Iu4y25_CQGI6QStwvP9myrCPOQUnPNlXz7Ynnl2jrHSBx6rZdFgo5iwk"/>
+</div>
+</div>
+</nav>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col bg-[#0D0F14] fixed left-0 top-0 h-full w-[240px] z-40 border-r border-white/5 pt-[80px] flex-shrink-0">
+<div class="px-6 mb-8 hidden">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center">
+<img alt="OperaIQ Logo Icon" class="w-5 h-5 object-contain opacity-80" data-alt="A minimalist, futuristic geometric logo icon resembling an abstract 'O' or neural network node, rendered in glowing indigo and white lines against a dark obsidian background. Professional and high-tech corporate identity style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOsz5IhrA_BE3dTQ84bOc-VRkcQHljp7H_L1urQIDNBPEcNO0_OgZo2_2fgWVYdGnwafSJ5_IDG8UX62muqDxpl-X7Rcgbr-fixa_9KCxz06u_AurP4SeHw_kroHfkVEumAEEW5aiBpeT7XXmED0E-EFQ5hf0xKZJfgvR1v1kuqFaZ75rR3d1BQ2TBd7p4oTyorK_1MZt-n-rz_zwdDUXcVKWvLL269sdT44zy0FAkE1ywId7T02frrvDBtppZzLPZDoagiLzG7AQ"/>
+</div>
+<div>
+<div class="text-indigo-500 font-bold text-body-base leading-tight">OperaIQ</div>
+<div class="text-slate-500 text-[10px] uppercase tracking-wider font-semibold">Live Ops Board</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1 text-sm font-medium font-['Inter']">
+<a class="text-indigo-400 bg-indigo-500/10 border-l-2 border-indigo-500 flex items-center px-4 py-3 gap-3 hover:bg-white/5 transition-colors active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-90">dashboard</span>
+                    Overview
+                </a>
+<a class="text-slate-500 hover:text-slate-200 flex items-center px-4 py-3 gap-3 hover:bg-white/5 transition-colors active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70">emergency</span>
+                    Incidents
+                </a>
+<a class="text-slate-500 hover:text-slate-200 flex items-center px-4 py-3 gap-3 hover:bg-white/5 transition-colors active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70">rocket_launch</span>
+                    Deployments
+                </a>
+<a class="text-slate-500 hover:text-slate-200 flex items-center px-4 py-3 gap-3 hover:bg-white/5 transition-colors active:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70">description</span>
+                    Post-Mortems
+                </a>
+<a class="text-slate-500 hover:text-slate-200 flex items-center px-4 py-3 gap-3 hover:bg-white/5 transition-colors active:opacity-80 transition-opacity mt-auto mb-4" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70">settings</span>
+                    Settings
+                </a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[240px] relative overflow-y-auto grid-bg p-gutter flex flex-col gap-gutter">
+<!-- KPI Cards Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="glass-panel rounded-lg p-container-padding relative overflow-hidden flex flex-col gap-stack-sm">
+<div class="absolute top-0 left-0 w-32 h-32 bg-error/10 blur-3xl -ml-16 -mt-16 rounded-full pointer-events-none"></div>
+<div class="flex justify-between items-start text-on-surface-variant font-label-sm text-label-sm">
+<span>Active Incidents</span>
+<span class="material-symbols-outlined text-error text-[16px]">trending_down</span>
+</div>
+<div class="font-display-lg text-display-lg text-on-surface">7</div>
+<div class="text-error font-mono-data text-mono-data flex items-center gap-1 mt-auto">
+<span>+2 from last hour</span>
+</div>
+</div>
+<div class="glass-panel rounded-lg p-container-padding relative overflow-hidden flex flex-col gap-stack-sm">
+<div class="absolute top-0 left-0 w-32 h-32 bg-emerald-500/10 blur-3xl -ml-16 -mt-16 rounded-full pointer-events-none"></div>
+<div class="flex justify-between items-start text-on-surface-variant font-label-sm text-label-sm">
+<span>Deployments Today</span>
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">trending_up</span>
+</div>
+<div class="font-display-lg text-display-lg text-on-surface">23</div>
+<div class="text-emerald-400 font-mono-data text-mono-data flex items-center gap-1 mt-auto">
+<span>100% success rate</span>
+</div>
+</div>
+<div class="glass-panel rounded-lg p-container-padding relative overflow-hidden flex flex-col gap-stack-sm">
+<div class="absolute top-0 left-0 w-32 h-32 bg-amber-500/10 blur-3xl -ml-16 -mt-16 rounded-full pointer-events-none"></div>
+<div class="flex justify-between items-start text-on-surface-variant font-label-sm text-label-sm">
+<span>Error Rate %</span>
+<span class="material-symbols-outlined text-amber-400 text-[16px]">trending_up</span>
+</div>
+<div class="font-display-lg text-display-lg text-on-surface">2.4%</div>
+<div class="text-amber-400 font-mono-data text-mono-data flex items-center gap-1 mt-auto">
+<span>Above 1.5% threshold</span>
+</div>
+</div>
+<div class="glass-panel rounded-lg p-container-padding relative overflow-hidden flex flex-col gap-stack-sm">
+<div class="absolute top-0 left-0 w-32 h-32 bg-primary/10 blur-3xl -ml-16 -mt-16 rounded-full pointer-events-none"></div>
+<div class="flex justify-between items-start text-on-surface-variant font-label-sm text-label-sm">
+<span>P99 Latency ms</span>
+<span class="material-symbols-outlined text-primary text-[16px]">trending_down</span>
+</div>
+<div class="font-display-lg text-display-lg text-on-surface">847<span class="text-[24px] text-on-surface-variant ml-1">ms</span></div>
+<div class="text-primary font-mono-data text-mono-data flex items-center gap-1 mt-auto">
+<span>-12% vs yesterday</span>
+</div>
+</div>
+</div>
+<!-- Two Column Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-1">
+<!-- Live Incident Feed (Left) -->
+<div class="lg:col-span-7 glass-panel rounded-lg flex flex-col overflow-hidden h-[400px]">
+<div class="p-container-padding border-b border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Live Incident Feed</h2>
+</div>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto p-container-padding flex flex-col gap-3">
+<!-- Incident Item -->
+<div class="bg-surface-container-low rounded p-3 flex items-center justify-between border border-white/5 hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<span class="bg-error/15 text-error border border-error px-2 py-1 rounded text-[10px] font-bold tracking-wide uppercase w-20 text-center">Critical</span>
+<div>
+<div class="font-body-base text-body-base font-semibold text-on-surface">DB Connection Timeout</div>
+<div class="text-[12px] text-on-surface-variant flex items-center gap-2 mt-1">
+<span class="font-mono-data text-mono-data text-[11px] bg-white/5 px-1.5 rounded">auth-service</span>
+<span>•</span>
+<span>2 mins ago</span>
+</div>
+</div>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded text-sm font-medium transition-colors border border-primary/20">
+                                Engage Agent
+                            </button>
+</div>
+<!-- Incident Item -->
+<div class="bg-surface-container-low rounded p-3 flex items-center justify-between border border-white/5 hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<span class="bg-amber-500/15 text-amber-400 border border-amber-500/50 px-2 py-1 rounded text-[10px] font-bold tracking-wide uppercase w-20 text-center">Warning</span>
+<div>
+<div class="font-body-base text-body-base font-semibold text-on-surface">API Latency Spike</div>
+<div class="text-[12px] text-on-surface-variant flex items-center gap-2 mt-1">
+<span class="font-mono-data text-mono-data text-[11px] bg-white/5 px-1.5 rounded">gateway</span>
+<span>•</span>
+<span>14 mins ago</span>
+</div>
+</div>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded text-sm font-medium transition-colors border border-primary/20">
+                                Engage Agent
+                            </button>
+</div>
+<!-- Incident Item -->
+<div class="bg-surface-container-low rounded p-3 flex items-center justify-between border border-white/5 hover:bg-white/5 transition-colors">
+<div class="flex items-center gap-4">
+<span class="bg-blue-500/15 text-blue-400 border border-blue-500/50 px-2 py-1 rounded text-[10px] font-bold tracking-wide uppercase w-20 text-center">Info</span>
+<div>
+<div class="font-body-base text-body-base font-semibold text-on-surface">Pod Restarted</div>
+<div class="text-[12px] text-on-surface-variant flex items-center gap-2 mt-1">
+<span class="font-mono-data text-mono-data text-[11px] bg-white/5 px-1.5 rounded">worker-node-3</span>
+<span>•</span>
+<span>42 mins ago</span>
+</div>
+</div>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded text-sm font-medium transition-colors border border-primary/20">
+                                Engage Agent
+                            </button>
+</div>
+</div>
+</div>
+<!-- Error Rate Chart (Right) -->
+<div class="lg:col-span-5 glass-panel rounded-lg flex flex-col overflow-hidden h-[400px]">
+<div class="p-container-padding border-b border-white/5">
+<h2 class="font-headline-md text-headline-md text-on-surface">Error Rate (Last 60 min)</h2>
+</div>
+<div class="flex-1 p-container-padding relative flex items-end">
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 p-container-padding pointer-events-none flex flex-col justify-between">
+<div class="border-t border-white/5 w-full h-0"></div>
+<div class="border-t border-white/5 w-full h-0"></div>
+<div class="border-t border-white/5 w-full h-0"></div>
+<div class="border-t border-white/5 w-full h-0"></div>
+<div class="border-t border-white/5 w-full h-0"></div>
+</div>
+<!-- Simulated SVG Chart -->
+<div class="w-full h-full relative">
+<svg class="w-full h-[80%] absolute bottom-0" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#c0c1ff" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#c0c1ff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,100 L0,60 Q10,50 20,65 T40,55 T60,20 T80,40 T100,10 L100,100 Z" fill="url(#chartGradient)"></path>
+<path d="M0,60 Q10,50 20,65 T40,55 T60,20 T80,40 T100,10" fill="none" stroke="#c0c1ff" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+<!-- Axis Labels -->
+<div class="absolute bottom-[-20px] left-0 right-0 flex justify-between text-[10px] text-on-surface-variant font-mono-data">
+<span>-60m</span>
+<span>-45m</span>
+<span>-30m</span>
+<span>-15m</span>
+<span>Now</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 z-50 bg-gradient-to-br from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white rounded-xl shadow-[0_20px_40px_rgba(99,102,241,0.3)] flex items-center gap-2 px-5 py-3 transition-transform hover:scale-105 active:scale-95 border border-white/20">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span class="font-body-base text-sm font-semibold">Ask OperaIQ</span>
+</button>
+</body></html>

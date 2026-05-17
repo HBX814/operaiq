@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Post-Mortem Center - OperaIQ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c6c6cd",
+                        "on-secondary": "#2e3036",
+                        "on-background": "#e4e1ed",
+                        "surface-tint": "#c0c1ff",
+                        "primary": "#c0c1ff",
+                        "surface-container-low": "#1b1b23",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-tertiary-container": "#452000",
+                        "secondary-fixed-dim": "#c6c6cd",
+                        "secondary-fixed": "#e2e2e9",
+                        "inverse-surface": "#e4e1ed",
+                        "outline": "#908fa0",
+                        "on-error": "#690005",
+                        "on-secondary-fixed-variant": "#45474d",
+                        "primary-container": "#8083ff",
+                        "on-secondary-fixed": "#1a1b21",
+                        "surface-container": "#1f1f27",
+                        "outline-variant": "#464554",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-lowest": "#0d0d15",
+                        "inverse-primary": "#494bd6",
+                        "surface-variant": "#34343d",
+                        "error": "#ffb4ab",
+                        "surface": "#13131b",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "on-tertiary": "#4f2500",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "background": "#13131b",
+                        "surface-dim": "#13131b",
+                        "surface-container-high": "#292932",
+                        "secondary-container": "#45474d",
+                        "on-surface-variant": "#c7c4d7",
+                        "primary-fixed": "#e1e0ff",
+                        "surface-container-highest": "#34343d",
+                        "on-surface": "#e4e1ed",
+                        "on-secondary-container": "#b4b5bc",
+                        "on-tertiary-fixed": "#301400",
+                        "on-primary-container": "#0d0096",
+                        "surface-bright": "#393841",
+                        "on-primary": "#1000a9",
+                        "tertiary-fixed": "#ffdcc5",
+                        "tertiary": "#ffb783",
+                        "inverse-on-surface": "#303038",
+                        "tertiary-container": "#d97721",
+                        "on-primary-fixed-variant": "#2f2ebe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "margin-page": "40px",
+                        "container-padding": "20px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "mono-data": ["monospace"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-base": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono-data": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-base": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base min-h-screen overflow-hidden flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="bg-[#0D0F14]/80 backdrop-blur-xl font-['Inter'] tracking-tight docked full-width top-0 z-40 border-b border-white/5 shadow-2xl shadow-indigo-500/10 transition-all duration-300 ease-in-out flex justify-between items-center w-full px-6 h-16 shrink-0">
+<div class="flex items-center gap-4">
+<span class="text-xl font-black text-indigo-500 tracking-tighter">OperaIQ</span>
+<div class="hidden md:flex bg-surface-container/50 border border-outline-variant/30 rounded-full px-4 py-1.5 items-center ml-8">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-transparent border-none text-sm text-on-surface focus:ring-0 w-64 placeholder:text-on-surface-variant/50 p-0" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:bg-white/5 hover:text-indigo-300 p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-slate-400 hover:bg-white/5 hover:text-indigo-300 p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<button class="text-slate-400 hover:bg-white/5 hover:text-indigo-300 p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/50 ml-2">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd8vuHhuMmhVeI3NP6K5sW6mmq1WDoQMtxWVNHVGZh4xIiQNiqGEc_dJioZ8vr69DxFwGp8mYly5DF78L1EC-6-sMqQAm39V8tyBPpEb5Ru-OnHECO4qdqB7Qpv5oQ9KCH6FofzroJvAiMfLzvzPXRr0KFNRCIn-NIuvNGup6t5PZPOHP2_7LPYgo_jjPgBaygZxNCAw_AETh6B0AncjYBSg-9mU9mb3ikaycnPS0nbJRfEk_qrUEPCEvvRRyL-zyw2qkTW4BGQAA"/>
+</div>
+</div>
+</nav>
+<div class="flex flex-1 overflow-hidden relative bg-grid">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col py-4 h-full bg-[#0D0F14] font-['Inter'] text-sm font-medium fixed left-0 top-0 h-full w-64 z-50 border-r border-white/5 transition-all duration-300" style="position: relative; height: 100%; top: 0;">
+<div class="px-6 pb-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant/30 overflow-hidden">
+<span class="material-symbols-outlined text-indigo-500" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+</div>
+<div>
+<h2 class="text-indigo-500 font-bold leading-tight">OperaIQ</h2>
+<p class="text-xs text-on-surface-variant">Command Center</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg border-l-4 border-indigo-500 bg-indigo-500/10 text-indigo-400 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">error</span>
+                    Incidents
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">layers</span>
+                    Services
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">group</span>
+                    Agents
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">assessment</span>
+                    Reports
+                </a>
+</nav>
+<div class="px-3 mt-auto pt-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors duration-200 active:scale-98 transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">contact_support</span>
+                    Support
+                </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex overflow-hidden w-full relative h-full">
+<!-- Left Panel (Document List) -->
+<div class="w-[35%] min-w-[320px] max-w-[450px] border-r border-outline-variant/30 flex flex-col h-full bg-surface/50 backdrop-blur-sm z-10">
+<div class="p-4 border-b border-outline-variant/30 flex justify-between items-center shrink-0">
+<h2 class="font-headline-md text-headline-md text-on-surface">Post-Mortems</h2>
+<button class="bg-primary-container/20 text-primary hover:bg-primary-container/30 rounded-lg p-1.5 transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+<!-- Active Card -->
+<div class="glass-panel p-4 rounded-xl cursor-pointer border-l-[3px] border-l-indigo-500 bg-white/[0.05] hover:bg-white/[0.08] transition-colors relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-indigo-500/10 to-transparent pointer-events-none"></div>
+<div class="flex justify-between items-start mb-2 relative z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-400 text-[18px]">description</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">INC-2847</span>
+</div>
+<span class="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                92/100
+                            </span>
+</div>
+<h3 class="font-headline-md text-sm text-on-surface mb-1 relative z-10 line-clamp-2 leading-snug">Payment Gateway Outage - March 2024</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant font-normal relative z-10">Mar 14, 2024 • 2h 15m duration</p>
+</div>
+<!-- Inactive Card 1 -->
+<div class="glass-panel p-4 rounded-xl cursor-pointer hover:bg-white/[0.05] transition-colors group border-l-[3px] border-l-transparent">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">description</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">INC-2811</span>
+</div>
+<span class="bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                72/100
+                            </span>
+</div>
+<h3 class="font-headline-md text-sm text-on-surface/80 group-hover:text-on-surface mb-1 line-clamp-2 leading-snug">Database Failover Latency Spike</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant font-normal">Feb 28, 2024 • 45m duration</p>
+</div>
+<!-- Inactive Card 2 -->
+<div class="glass-panel p-4 rounded-xl cursor-pointer hover:bg-white/[0.05] transition-colors group border-l-[3px] border-l-transparent">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">description</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-xs">INC-2790</span>
+</div>
+<span class="bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                55/100
+                            </span>
+</div>
+<h3 class="font-headline-md text-sm text-on-surface/80 group-hover:text-on-surface mb-1 line-clamp-2 leading-snug">Auth Service Deployment Rollback</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant font-normal">Feb 12, 2024 • 1h 30m duration</p>
+</div>
+</div>
+</div>
+<!-- Right Panel (Detail View) -->
+<div class="flex-1 flex flex-col h-full bg-transparent overflow-hidden">
+<!-- Detail Header -->
+<header class="p-6 border-b border-outline-variant/20 shrink-0 flex justify-between items-start glass-panel rounded-none border-t-0 border-l-0 border-r-0 z-20">
+<div class="max-w-2xl">
+<div class="flex items-center gap-3 mb-2">
+<span class="font-mono-data text-mono-data text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded">INC-2847</span>
+<span class="text-on-surface-variant text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                                Mar 14, 2024
+                            </span>
+</div>
+<h1 class="font-display-lg text-3xl text-on-surface flex items-center gap-3 group">
+                            Payment Gateway Outage - March 2024
+                            <button class="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</h1>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">AI Quality Score</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant cursor-help">info</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2 border border-outline-variant/30 flex items-center gap-3">
+<div class="relative w-10 h-10 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" stroke-dasharray="92, 100" stroke-width="3"></path>
+</svg>
+<span class="absolute text-xs font-bold text-emerald-400">92</span>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar pb-24">
+<!-- 1. Summary -->
+<section class="glass-panel p-5 rounded-xl group relative">
+<div class="flex justify-between items-center mb-4 border-b border-outline-variant/20 pb-2">
+<h2 class="font-headline-md text-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-400">subject</span>
+                                Summary
+                            </h2>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+</div>
+</div>
+<div class="text-on-surface-variant text-sm leading-relaxed max-w-3xl">
+                            At 14:03 UTC on March 14, 2024, the primary payment gateway experienced a total failure for 2 hours and 15 minutes, resulting in approximately $45k of blocked transactions. The outage was triggered by an unhandled exception in the third-party tokenization service response, which caused a cascading failure in the checkout worker pool.
+                        </div>
+</section>
+<!-- 2. Timeline -->
+<section class="glass-panel p-5 rounded-xl group relative">
+<div class="flex justify-between items-center mb-4 border-b border-outline-variant/20 pb-2">
+<h2 class="font-headline-md text-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-indigo-400">schedule</span>
+                                Timeline
+                            </h2>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+</div>
+</div>
+<div class="relative pl-4 space-y-6 max-w-3xl before:absolute before:inset-0 before:ml-[23px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-outline-variant/30 before:to-transparent">
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group/item">
+<div class="flex items-center justify-center w-8 h-8 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 shrink-0 md:order-1 md:group-odd/item:-translate-x-1/2 md:group-even/item:translate-x-1/2 shadow-[0_0_10px_rgba(244,63,94,0.2)] relative z-10 ml-[-12px] md:ml-0">
+<span class="w-2 h-2 rounded-full bg-rose-500"></span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-lg bg-surface-container/50 border border-outline-variant/20 ml-4 md:ml-0">
+<div class="flex items-center justify-between mb-1">
+<time class="font-mono-data text-xs text-on-surface-variant">14:03 UTC</time>
+</div>
+<p class="text-sm text-on-surface">Initial alert: Checkout API latency spiked &gt;5s.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Contextual FAB (Chat) -->
+<button class="absolute bottom-8 right-8 w-14 h-14 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-[0_20px_40px_rgba(99,102,241,0.2)] flex items-center justify-center transition-transform hover:scale-105 z-50">
+<span class="material-symbols-outlined text-[24px]">smart_toy</span>
+</button>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,20 @@
+[
+  {"name": "event_type", "type": "STRING", "mode": "REQUIRED", "description": "Type of event: deployment, metric, incident"},
+  {"name": "timestamp", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Event occurrence time (partition key)"},
+  {"name": "service", "type": "STRING", "mode": "REQUIRED", "description": "Microservice name"},
+
+  {"name": "deployment_id", "type": "STRING", "mode": "NULLABLE", "description": "UUID for deployment events"},
+  {"name": "version", "type": "STRING", "mode": "NULLABLE", "description": "Semver string for deployment events"},
+  {"name": "status", "type": "STRING", "mode": "NULLABLE", "description": "success or failed for deployments; open or resolved for incidents"},
+  {"name": "region", "type": "STRING", "mode": "NULLABLE", "description": "GCP region"},
+
+  {"name": "metric_type", "type": "STRING", "mode": "NULLABLE", "description": "error_rate, p99_latency_ms, cpu_percent, request_rate"},
+  {"name": "value", "type": "FLOAT64", "mode": "NULLABLE", "description": "Metric value"},
+
+  {"name": "incident_id", "type": "STRING", "mode": "NULLABLE", "description": "UUID for incident events"},
+  {"name": "title", "type": "STRING", "mode": "NULLABLE", "description": "Human-readable incident title"},
+  {"name": "severity", "type": "STRING", "mode": "NULLABLE", "description": "critical, warning, or info"},
+  {"name": "triggered_by_deployment_id", "type": "STRING", "mode": "NULLABLE", "description": "Deployment UUID that caused the incident"},
+
+  {"name": "ingested_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Pub/Sub ingestion timestamp"}
+]
