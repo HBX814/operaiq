@@ -166,7 +166,6 @@ Compared to out-of-the-box offerings (PagerDuty, Opsgenie, etc.), OperaIQ is opi
 
 ## Contributing
 
-- Read `CONTRIBUTING.md` (if present) and run tests locally.
 - When adding tools to `mcp-server/tools`, add corresponding unit tests under `mcp-server/tests`.
 - Keep agent instructions concise and add unit tests for edge-case behavior (especially for approval flows in `agents/main.py`).
 
