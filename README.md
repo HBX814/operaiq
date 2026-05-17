@@ -172,14 +172,4 @@ Compared to out-of-the-box offerings (PagerDuty, Opsgenie, etc.), OperaIQ is opi
 
 ---
 
-## License & Attribution
-
-This repository is provided as-is for internal use and demos. Add a `LICENSE` file to declare the intended license for distribution.
-
----
-
-If you'd like, I can now:
-- run the repository tests locally, or
-- create a shorter `README-INTRO.md` for quick onboarding, or
-- add inline code comments describing the approval flow in `agents/main.py`.
 
